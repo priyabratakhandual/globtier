@@ -1,3 +1,3 @@
-echo"helloworld"
+echo"hello, world"
 
-echo"kanishk kumar"
+echo"kanishk, kumar"
