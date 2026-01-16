@@ -84,7 +84,7 @@ except ImportError:
     log.warning('BeautifulSoup4 not available. HTML parsing will use regex fallback.')
 
 # Configuration
-PORT = int(os.getenv('PORT', 5005))
+PORT = int(os.getenv('PORT', 7000))
 QUIZZES_PATH = os.path.join('public', 'config', 'quizzes.json')
 PROMPTS_PATH = os.path.join('public', 'config', 'prompt.json')
 LOG_FILE = 'gateway.log'
@@ -2931,7 +2931,7 @@ const apiCall = (endpoint, options = {}) => {
             '/api/'
         )
         html_content = html_content.replace(
-            'http://localhost:5005/api/',
+            'http://localhost:7000/api/',
             '/api/'
         )
         # Generic replacement for any localhost port
@@ -3112,7 +3112,7 @@ const apiCall = (endpoint, options = {}) => {
             '/api/'
         )
         html_content = html_content.replace(
-            'http://localhost:5005/api/',
+            'http://localhost:7000/api/',
             '/api/'
         )
         html_content = re.sub(
