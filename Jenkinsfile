@@ -80,7 +80,7 @@ pipeline {
 
                     rm -rf maturity-gitops
 
-                    git clone https://${GITHUB_TOKEN}@github.com/priyabratakhandual/maturity-gitops.git
+                    git clone https://${GITHUB_TOKEN}@github.com/priyabratakhandual/gitops.git
 
                     cd maturity-gitops/maturity-app
 
