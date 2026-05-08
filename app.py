@@ -3174,8 +3174,8 @@ app.register_blueprint(bp)
 
 
 if __name__ == '__main__':
-    log.info('===== GitOps Deployment Successful =====')
-    log_to_file('===== GitOps Deployment Successful =====')
+    log.info('===== GitOps Deployment Successful Server =====')
+    log_to_file('===== GitOps Deployment Successful Server =====')
     log.info(f'Starting Flask server on port {PORT}')
     log_to_file(f'Starting Flask server on port {PORT}')
     app.run(host='0.0.0.0', port=PORT, debug=True)
