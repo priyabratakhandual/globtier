@@ -78,11 +78,11 @@ pipeline {
 
                     sh '''
 
-                    rm -rf maturity-gitops
+                    rm -rf gitops
 
                     git clone https://${GITHUB_TOKEN}@github.com/priyabratakhandual/gitops.git
 
-                    cd maturity-gitops/maturity-app
+                    cd gitops/maturity-app
 
                     sed -i "s/tag:.*/tag: \\"$TAG\\"/" values.yaml
 
