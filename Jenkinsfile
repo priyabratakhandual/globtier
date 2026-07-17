@@ -3,116 +3,88 @@ pipeline {
     agent any
 
     environment {
-
-        IMAGE_NAME = "priyabratakhandual/maturity-app"
-
-        TAG = "${BUILD_NUMBER}"
+        AWS_REGION   = "ap-south-1"
+        IMAGE_NAME   = "priyabratakhandual/maturity:latest"
+        CLUSTER_NAME = "my-ecs-cluster"
+        SERVICE_NAME = "my-app-service"
     }
 
     stages {
 
         stage('Checkout Code') {
-
             steps {
-
                 git branch: 'main',
-                url: 'https://github.com/priyabratakhandual/globtier.git'
+                    url: 'https://github.com/priyabratakhandual/globtier.git'
             }
         }
 
         stage('Build Docker Image') {
-
             steps {
-
                 sh '''
-                docker-compose build
+                    docker-compose build
                 '''
             }
         }
 
         stage('Docker Login') {
-
             steps {
-
                 withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
+                    credentialsId: 'dockerhub',
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-
                     sh '''
-                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                     '''
                 }
             }
         }
 
-        stage('Tag Docker Image') {
-
+        stage('Tag Image') {
             steps {
-
                 sh '''
-                docker tag priyabratakhandual/maturity-app:latest $IMAGE_NAME:$TAG
+                    docker tag priyabratakhandual/maturity:latest $IMAGE_NAME:latest
                 '''
             }
         }
 
-        stage('Push Docker Image') {
-
+        stage('Push Image') {
             steps {
-
                 sh '''
-                docker push $IMAGE_NAME:$TAG
+                    docker push $IMAGE_NAME:latest
                 '''
             }
         }
 
-        stage('Update GitOps Repo') {
-
+        stage('Deploy to ECS') {
             steps {
+                sh '''
+                    aws ecs update-service \
+                        --cluster $CLUSTER_NAME \
+                        --service $SERVICE_NAME \
+                        --force-new-deployment \
+                        --region $AWS_REGION
 
-                withCredentials([string(
-                    credentialsId: 'github-creds',
-                    variable: 'GITHUB_TOKEN'
-                )]) {
-
-                    sh '''
-
-                    rm -rf gitops
-
-                    git clone https://${GITHUB_TOKEN}@github.com/priyabratakhandual/gitops.git
-
-                    cd gitops/maturity-app
-
-                    sed -i "s/tag:.*/tag: \\"$TAG\\"/" values.yaml
-
-                    cat values.yaml
-
-                    git config user.email "jenkins@example.com"
-
-                    git config user.name "jenkins"
-
-                    git add values.yaml
-
-                    git commit -m "Updated image tag to $TAG"
-
-                    git push
-                    '''
-                }
+                    aws ecs wait services-stable \
+                        --cluster $CLUSTER_NAME \
+                        --services $SERVICE_NAME \
+                        --region $AWS_REGION
+                '''
             }
         }
     }
 
     post {
-
         success {
-
-            echo 'GitOps Deployment Successful'
+            echo 'ECS Deployment Successful'
         }
 
         failure {
+            echo 'ECS Deployment Failed'
+        }
 
-            echo 'Pipeline Failed'
+        always {
+            sh 'docker image prune -af || true'
         }
     }
 }

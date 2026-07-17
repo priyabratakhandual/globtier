@@ -6,9 +6,9 @@ services:
 
     build: .
 
-    image: priyabratakhandual/maturity-app:latest
+    image: priyabratakhandual/maturity:latest
 
-    container_name: maturity-app
+    container_name: maturity
 
     restart: always
 
