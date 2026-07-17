@@ -4,7 +4,7 @@ pipeline {
 
     environment {
         AWS_REGION   = "ap-south-1"
-        IMAGE_NAME   = "priyabratakhandual/maturity:latest"
+        IMAGE_NAME   = "priyabratakhandual/maturity"
         CLUSTER_NAME = "my-ecs-cluster"
         SERVICE_NAME = "my-app-service"
     }
