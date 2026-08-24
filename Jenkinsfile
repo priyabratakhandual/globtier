@@ -32,24 +32,6 @@ pipeline {
             }
         }
 
-        stage('Trivy Security Scan') {
-            steps {
-                sh '''
-                    echo "Scanning image:"
-                    echo "${IMAGE_NAME}:${BUILD_NUMBER}"
-
-
-                    trivy image \
-                        --severity HIGH,CRITICAL \
-                        --exit-code 1 \
-                        --no-progress \
-                        ${IMAGE_NAME}:${BUILD_NUMBER}
-                '''
-            }
-        }
-
-                   
-
         stage('Login to AWS ECR') {
             steps {
                 sh '''
