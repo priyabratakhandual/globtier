@@ -3,13 +3,13 @@ pipeline {
     agent any
 
     environment {
-        AWS_REGION  = "ap-south-1"
+        AWS_REGION     = "ap-south-1"
         AWS_ACCOUNT_ID = "253627981876"
 
-        ECR_REGISTRY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+        ECR_REGISTRY   = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
         ECR_REPOSITORY = "maturity"
 
-        IMAGE_NAME = "${ECR_REGISTRY}/${ECR_REPOSITORY}"
+        IMAGE_NAME     = "${ECR_REGISTRY}/${ECR_REPOSITORY}"
     }
 
     stages {
@@ -27,7 +27,9 @@ pipeline {
                     echo "Building image:"
                     echo "${IMAGE_NAME}:${BUILD_NUMBER}"
 
-                    docker compose build
+                    docker build \
+                        --platform linux/amd64 \
+                        -t ${IMAGE_NAME}:${BUILD_NUMBER} .
                 '''
             }
         }
@@ -50,7 +52,7 @@ pipeline {
                     echo "Pushing image:"
                     echo "${IMAGE_NAME}:${BUILD_NUMBER}"
 
-                    docker compose push
+                    docker push ${IMAGE_NAME}:${BUILD_NUMBER}
                 '''
             }
         }
