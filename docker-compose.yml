@@ -1,13 +1,10 @@
+version: "3.9"
+
 services:
   maturity-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      
-
-    image: ${ECR_REGISTRY}/maturity:${BUILD_NUMBER}
-
     container_name: maturity
+
+    image: ${IMAGE_NAME}:${BUILD_NUMBER}
 
     restart: unless-stopped
 

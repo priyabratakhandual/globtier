@@ -26,11 +26,16 @@ pipeline {
                 sh '''
                     set -e
 
-                    echo "Building image:"
-                    echo "${IMAGE_NAME}:${BUILD_NUMBER}"
+                    echo "========================================"
+                    echo "Building Docker Image"
+                    echo "========================================"
+
+                    echo "Image: ${IMAGE_NAME}:${BUILD_NUMBER}"
 
                     docker build \
                         --platform linux/amd64 \
+                        --provenance=false \
+                        --sbom=false \
                         -t ${IMAGE_NAME}:${BUILD_NUMBER} .
                 '''
             }
@@ -39,6 +44,12 @@ pipeline {
         stage('Login to AWS ECR') {
             steps {
                 sh '''
+                    set -e
+
+                    echo "========================================"
+                    echo "Login to AWS ECR"
+                    echo "========================================"
+
                     aws ecr get-login-password \
                         --region ${AWS_REGION} | \
                     docker login \
@@ -53,8 +64,11 @@ pipeline {
                 sh '''
                     set -e
 
-                    echo "Pushing image:"
-                    echo "${IMAGE_NAME}:${BUILD_NUMBER}"
+                    echo "========================================"
+                    echo "Push Image to ECR"
+                    echo "========================================"
+
+                    echo "Pushing: ${IMAGE_NAME}:${BUILD_NUMBER}"
 
                     docker push ${IMAGE_NAME}:${BUILD_NUMBER}
                 '''
@@ -64,6 +78,12 @@ pipeline {
         stage('Verify ECR Image') {
             steps {
                 sh '''
+                    set -e
+
+                    echo "========================================"
+                    echo "Verify ECR Image"
+                    echo "========================================"
+
                     aws ecr describe-images \
                         --repository-name ${ECR_REPOSITORY} \
                         --image-ids imageTag=${BUILD_NUMBER} \
@@ -76,12 +96,18 @@ pipeline {
     post {
 
         success {
-            echo "Docker image pushed successfully!"
-            echo "Image: ${IMAGE_NAME}:${BUILD_NUMBER}"
+            echo "========================================"
+            echo "BUILD SUCCESSFUL"
+            echo "========================================"
+
+            echo "Image pushed:"
+            echo "${IMAGE_NAME}:${BUILD_NUMBER}"
         }
 
         failure {
-            echo "Docker/ECR build failed!"
+            echo "========================================"
+            echo "BUILD FAILED"
+            echo "========================================"
         }
 
         always {
