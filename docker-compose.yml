@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      provenance: false
+      sbom: false
 
     image: ${ECR_REGISTRY}/maturity:${BUILD_NUMBER}
 
