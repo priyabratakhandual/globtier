@@ -24,6 +24,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh '''
+                    set -e
+
                     echo "Building image:"
                     echo "${IMAGE_NAME}:${BUILD_NUMBER}"
 
@@ -49,6 +51,8 @@ pipeline {
         stage('Push Image to ECR') {
             steps {
                 sh '''
+                    set -e
+
                     echo "Pushing image:"
                     echo "${IMAGE_NAME}:${BUILD_NUMBER}"
 
